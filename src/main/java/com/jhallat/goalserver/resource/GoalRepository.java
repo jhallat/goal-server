@@ -1,6 +1,6 @@
-package com.jhallat.resource;
+package com.jhallat.goalserver.resource;
 
-import com.jhallat.model.Goal;
+import com.jhallat.goalserver.entity.Goal;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.pgclient.PgPool;
@@ -34,5 +34,11 @@ public class GoalRepository {
     public void update(Goal goal) {
         client.preparedQuery("UPDATE goals SET description = $1 WHERE id = $2")
                 .execute(Tuple.of(goal.description(), goal.id()));
+    }
+
+    public Uni<Boolean> delete(long id) {
+        return client.preparedQuery("DELETE FROM goals WHERE id = $1")
+                .execute(Tuple.of(id))
+                .onItem().transform(pgRowSet -> pgRowSet.rowCount() == 1);
     }
 }

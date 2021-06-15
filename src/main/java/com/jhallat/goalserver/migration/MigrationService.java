@@ -1,4 +1,4 @@
-package com.jhallat.migration;
+package com.jhallat.goalserver.migration;
 
 import org.flywaydb.core.Flyway;
 

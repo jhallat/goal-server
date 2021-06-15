@@ -1,6 +1,4 @@
-package com.jhallat.model;
-
-import java.util.List;
+package com.jhallat.goalserver.entity;
 
 public record Goal(long id, String description) {
 }
