@@ -32,7 +32,7 @@ public class GoalController {
 
     @DELETE
     @Path("{id}")
-    public Uni<Response> deleteGoal(@PathParam Long id) {
+    public Uni<Response> deleteGoal(@PathParam("id") Long id) {
         return repository.delete(id)
                 .onItem().transform(deleted -> deleted ? Response.Status.NO_CONTENT : Response.Status.NOT_FOUND)
                 .onItem().transform(status -> Response.status(status).build());
