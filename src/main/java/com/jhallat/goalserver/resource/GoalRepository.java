@@ -12,6 +12,7 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class GoalRepository {
 
+
     @Inject
     PgPool client;
 

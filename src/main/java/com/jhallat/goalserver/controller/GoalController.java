@@ -1,4 +1,4 @@
-package com.jhallat.goalserver.com.jhallat.controller;
+package com.jhallat.goalserver.controller;
 
 import com.jhallat.goalserver.entity.Goal;
 import com.jhallat.goalserver.model.GoalCreationDTO;
