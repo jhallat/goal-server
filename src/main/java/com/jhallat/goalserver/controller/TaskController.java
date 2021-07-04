@@ -1,8 +1,9 @@
 package com.jhallat.goalserver.controller;
 
 import com.jhallat.goalserver.entity.Task;
-import com.jhallat.goalserver.model.TaskCompletionDTO;
 import com.jhallat.goalserver.model.TaskCreationDTO;
+import com.jhallat.goalserver.model.TaskUpdateDTO;
+import com.jhallat.goalserver.model.TaskUpdateStatusDTO;
 import com.jhallat.goalserver.resource.TaskRepository;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -32,10 +33,26 @@ public class TaskController {
     }
 
     @PUT
-    @Path("{id}")
-    public Uni<Response> completeTask(@PathParam("id") Long id, TaskCompletionDTO taskCompletion) {
-        return repository.updateCompleted(taskCompletion)
+    @Path("{id}/status")
+    public Uni<Response> updateStatus(@PathParam("id") Long id, TaskUpdateStatusDTO statusDTO) {
+        return repository.updateStatus(id, statusDTO.statusId())
                 .onItem().transform(completed -> completed ? Response.Status.NO_CONTENT : Response.Status.NOT_FOUND)
+                .onItem().transform(status -> Response.status(status).build());
+    }
+
+    @PUT
+    @Path("{id}")
+    public Uni<Response> updateTask(@PathParam("id") Long id, TaskUpdateDTO updateDTO) {
+        return repository.updateTask(id, updateDTO)
+                .onItem().transform(completed -> completed ? Response.Status.NO_CONTENT : Response.Status.NOT_FOUND)
+                .onItem().transform(status -> Response.status(status).build());
+    }
+
+    @DELETE
+    @Path("{id}")
+    public Uni<Response> deleteTask(@PathParam("id") Long id) {
+        return repository.deleteTask(id)
+                .onItem().transform(deleted -> deleted ? Response.Status.NO_CONTENT : Response.Status.NOT_FOUND)
                 .onItem().transform(status -> Response.status(status).build());
     }
 }
