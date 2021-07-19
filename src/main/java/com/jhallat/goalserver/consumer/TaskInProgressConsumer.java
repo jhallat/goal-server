@@ -1,9 +1,6 @@
 package com.jhallat.goalserver.consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jhallat.goalserver.model.TaskCompletionDTO;
 import com.jhallat.goalserver.model.TaskInProgressDTO;
 import com.jhallat.goalserver.resource.TaskRepository;
 import com.rabbitmq.client.*;
@@ -13,11 +10,13 @@ import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+@ApplicationScoped
 public class TaskInProgressConsumer {
 
     @Inject

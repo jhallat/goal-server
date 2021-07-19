@@ -2,8 +2,10 @@ package com.jhallat.goalserver.controller;
 
 import com.jhallat.goalserver.entity.Task;
 import com.jhallat.goalserver.model.TaskCreationDTO;
+import com.jhallat.goalserver.model.TaskDescriptionDTO;
 import com.jhallat.goalserver.model.TaskUpdateDTO;
 import com.jhallat.goalserver.model.TaskUpdateStatusDTO;
+import com.jhallat.goalserver.producer.TaskDescriptionProducer;
 import com.jhallat.goalserver.resource.TaskRepository;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
@@ -20,6 +22,9 @@ public class TaskController {
 
     @Inject
     TaskRepository repository;
+
+    @Inject
+    TaskDescriptionProducer producer;
 
     @GET
     @Path("{goalId}")
@@ -43,9 +48,11 @@ public class TaskController {
     @PUT
     @Path("{id}")
     public Uni<Response> updateTask(@PathParam("id") Long id, TaskUpdateDTO updateDTO) {
-        return repository.updateTask(id, updateDTO)
+        var response = repository.updateTask(id, updateDTO)
                 .onItem().transform(completed -> completed ? Response.Status.NO_CONTENT : Response.Status.NOT_FOUND)
                 .onItem().transform(status -> Response.status(status).build());
+        producer.sendDescription(new TaskDescriptionDTO(id, updateDTO.description()));
+        return response;
     }
 
     @DELETE
