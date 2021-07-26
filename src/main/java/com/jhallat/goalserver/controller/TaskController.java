@@ -27,9 +27,15 @@ public class TaskController {
     TaskDescriptionProducer producer;
 
     @GET
-    @Path("{goalId}")
-    public Multi<Task> getTasks(@PathParam("goalId") long goalId) {
+    @Path("goal/{goalId}")
+    public Multi<Task> getTasksForGoal(@PathParam("goalId") long goalId) {
         return repository.findAllByGoal(goalId);
+    }
+
+    @GET
+    @Path("{taskId}")
+    public Uni<Task> getTask(@PathParam("taskId") long taskId) {
+        return repository.findById(taskId);
     }
 
     @POST
