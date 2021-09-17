@@ -24,6 +24,12 @@ public class GoalController {
         return repository.findAll();
     }
 
+    @GET
+    @Path("{id}")
+    public Uni<Goal> getGoal(@PathParam("id") long id) {
+        return repository.findById(id);
+    }
+
     @POST
     public Uni<Goal> createGoal(GoalCreationDTO goalCreationDTO) {
         Goal goal = new Goal(0, goalCreationDTO.description());

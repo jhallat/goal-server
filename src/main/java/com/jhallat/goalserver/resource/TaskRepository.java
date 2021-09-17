@@ -29,7 +29,8 @@ public class TaskRepository {
                            status.key as status_key,
                            status.description as status_description,
                            ongoing,
-                           quantifiable 
+                           quantifiable,
+                           notes 
                     FROM tasks
                     INNER JOIN status
                         ON tasks.status_id = status.id
@@ -45,7 +46,8 @@ public class TaskRepository {
                            status.key as status_key,
                            status.description as status_description,
                            ongoing,
-                           quantifiable 
+                           quantifiable,
+                           notes 
                     FROM tasks
                     INNER JOIN status
                         ON tasks.status_id = status.id
@@ -53,8 +55,8 @@ public class TaskRepository {
             """;
 
     private static final String SQL_INSERT = """
-            INSERT INTO tasks(goal_id, description, status_id, ongoing, quantifiable)
-            VALUES ($1, $2, $3, $4, $5) RETURNING id
+            INSERT INTO tasks(goal_id, description, status_id, ongoing, quantifiable, notes)
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
             """;
 
     private static final String SQL_UPDATE_STATUS = """
@@ -72,7 +74,8 @@ public class TaskRepository {
             UPDATE tasks
             SET description = $2,
                 ongoing = $3,
-                quantifiable = $4
+                quantifiable = $4,
+                notes = $5
             WHERE id = $1    
             """;
 
@@ -90,7 +93,8 @@ public class TaskRepository {
                                                                row.getString("status_key"),
                                                                row.getString("status_description")),
                                                     row.getBoolean("ongoing"),
-                                                    row.getBoolean("quantifiable")));
+                                                    row.getBoolean("quantifiable"),
+                                                    row.getString("notes")));
     }
 
     public Uni<Task> findById(long taskId) {
@@ -105,7 +109,8 @@ public class TaskRepository {
                                 row.getString("status_key"),
                                 row.getString("status_description")),
                         row.getBoolean("ongoing"),
-                        row.getBoolean("quantifiable")));
+                        row.getBoolean("quantifiable"),
+                        row.getString("notes")));
     }
 
     public Uni<Task> insert(TaskCreationDTO task) {
@@ -114,7 +119,8 @@ public class TaskRepository {
                          task.description(),
                          1,
                          task.isOngoing(),
-                         task.isQuantifiable()))
+                         task.isQuantifiable(),
+                         task.notes()))
                 .onItem().transform(rowSet -> {
                     var row = rowSet.iterator().next();
                     return new Task(row.getLong("id"),
@@ -122,7 +128,8 @@ public class TaskRepository {
                                     task.description(),
                                     new Status(1, "PENDING", "Pending"),
                                     task.isOngoing(),
-                                    task.isQuantifiable());
+                                    task.isQuantifiable(),
+                                    task.notes());
                 });
     }
 
@@ -134,7 +141,11 @@ public class TaskRepository {
 
     public Uni<Boolean> updateTask(long taskId, TaskUpdateDTO update) {
         return client.preparedQuery(SQL_UPDATE_TASK)
-                .execute(Tuple.of(taskId, update.description(), update.isOngoing(), update.isQuantifiable()))
+                .execute(Tuple.of(taskId,
+                        update.description(),
+                        update.isOngoing(),
+                        update.isQuantifiable(),
+                        update.notes()))
                 .onItem().transform(pgRowSet -> pgRowSet.rowCount() > 0);
     }
 

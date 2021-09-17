@@ -4,6 +4,7 @@ import com.jhallat.goalserver.entity.Goal;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.pgclient.PgPool;
+import io.vertx.mutiny.sqlclient.RowSet;
 import io.vertx.mutiny.sqlclient.Tuple;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -21,6 +22,17 @@ public class GoalRepository {
         return client.query("SELECT id, description FROM goals ORDER BY description ASC").execute()
                 .onItem().transformToMulti(set -> Multi.createFrom().iterable(set))
                 .onItem().transform(row -> new Goal(row.getLong("id"), row.getString("description")));
+    }
+
+    public Uni<Goal> findById(long id) {
+        return client.preparedQuery("SELECT id, description FROM goals WHERE id = $1")
+                .execute(Tuple.of(id))
+                .onItem().transform(RowSet::iterator)
+                .onItem().transform(iterator -> iterator.hasNext() ? iterator.next() : null)
+                .onItem().transform(row -> row == null ? null : new Goal(
+                        row.getLong("id"),
+                        row.getString("description")
+                ));
     }
 
     public Uni<Goal> insert(Goal goal) {

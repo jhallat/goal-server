@@ -5,4 +5,5 @@ public record Task(long id,
                    String description,
                    Status status,
                    boolean isOngoing,
-                   boolean isQuantifiable) {}
+                   boolean isQuantifiable,
+                   String notes) {}
