@@ -41,6 +41,9 @@ public class TaskCompletionConsumer {
     @ConfigProperty(name = "queue.port")
     int queuePort;
 
+    @ConfigProperty(name = "queue.task.completed")
+    String taskCompletedQueue;
+
     private Connection connection;
     private Channel channel;
 
@@ -50,7 +53,8 @@ public class TaskCompletionConsumer {
         try {
             connection = createFactory().newConnection();
             channel = connection.createChannel();
-            channel.basicConsume("task.completed", true, "task-completed-tag",
+
+            channel.basicConsume(taskCompletedQueue, true, "task-completed-tag",
                     new DefaultConsumer(channel) {
                         @Override
                         public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig) {
